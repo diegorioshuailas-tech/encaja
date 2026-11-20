@@ -357,12 +357,8 @@ footer a:hover{color:var(--ink)}
 .stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .stage .gl{cursor:default}
 .stage.paint .gl{cursor:crosshair}
-.stagebtn{position:absolute;left:12px;top:12px;z-index:6;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:0;background:#fff;color:#0A0A0A;font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;box-shadow:0 2px 8px rgba(0,0,0,.18);transition:background-color 200ms ease,color 200ms ease,transform 160ms var(--ease-out)}
-.stagebtn .ico{width:16px;height:16px;color:var(--accent)}
-.stagebtn:active{transform:scale(.97)}
-.stagebtn.on{background:var(--accent);color:#fff}
-.stagebtn.on .ico{color:#fff}
-@media (max-width:640px){.stagebtn{min-height:36px;padding:0 10px;font-size:10px;left:8px;top:8px}}
+.edgebtn .ico{color:var(--accent)}
+.edgebtn.btn-dark .ico{color:inherit}
 .stage .drop{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.6);color:#fff;font-weight:500;font-size:15px;opacity:0;pointer-events:none;transition:opacity 150ms ease;z-index:5}
 .stage.dragover .drop{opacity:1}
 .stage .status{position:absolute;left:0;bottom:0;z-index:4;pointer-events:none;display:flex;gap:10px;align-items:center;background:rgba(10,10,10,.72);color:#fff;font-size:12px;font-weight:500;padding:9px 14px;max-width:100%}
@@ -2024,9 +2020,10 @@ const Sim = (() => {
         <div class="stagecol">
           <div class="toolbar">
             <button class="btn btn-line btn-sm" id="origBtn" title="Mantené apretado para ver la foto original">${ico('eye')}Antes / después</button>
-            <button class="btn btn-line btn-sm" id="saveBtn">${ico('download')}Guardar imagen</button>
+            <button class="btn btn-line btn-sm" id="saveBtn">${ico('download')}Guardar</button>
+            <button class="btn btn-line btn-sm edgebtn" id="edgeBtn" hidden></button>
             <span style="flex:1"></span>
-            <button class="btn btn-ghost btn-sm" data-mode="calib" aria-pressed="false" title="Si las piezas se ven torcidas">${ico('ruler')}Corregir perspectiva</button>
+            <button class="btn btn-ghost btn-sm" data-mode="calib" aria-pressed="false" title="Si las piezas se ven torcidas">${ico('ruler')}Perspectiva</button>
           </div>
           <div class="stage" id="stage" tabindex="0" aria-label="Tu ambiente. Tocá el piso o una pared para elegirla; arrastrá los productos para moverlos; Q y E giran el producto elegido; Suprimir lo quita.">
             <canvas id="photoC"></canvas><canvas class="gl" id="glC"></canvas>
@@ -2036,7 +2033,6 @@ const Sim = (() => {
             <div class="floattb" id="floattb" hidden role="toolbar" aria-label="Producto seleccionado">
               <button data-act="rotl" aria-label="Girar a la izquierda">${ico('rotl')}</button><button data-act="rotr" aria-label="Girar a la derecha">${ico('rotr')}</button>
               <button data-act="dup" aria-label="Duplicar">${ico('copy')}</button><button data-act="del" aria-label="Quitar">${ico('trash')}</button></div>
-            <button class="stagebtn" id="edgeBtn" hidden></button>
             <div class="drop">${ico('upload')} Soltá la foto para probar</div>
           </div>
           <div class="side zonepanel" id="surfPanel"></div>
@@ -2490,7 +2486,7 @@ const Sim = (() => {
   function toggleEdit() { S.editing = !S.editing; select(null); renderZonePanel(); if (S.editing) status('Arrastrá los puntos naranjas hasta el borde', false); }
   function drawZones() {
     const eb = $('#edgeBtn'), zz = zoneById(S.zsel);
-    if (eb) { const show = !!zz && S.mode === 'move' && !S.showOrig; eb.hidden = !show; if (show) eb.innerHTML = S.editing ? `${ico('check')}Listo` : `${ico('pen')}Ajustar bordes · ${esc(zz.name.toLowerCase())}`; eb.classList.toggle('on', !!S.editing); }
+    if (eb) { const show = !!zz && S.mode === 'move' && !S.showOrig; eb.hidden = !show; if (show) eb.innerHTML = S.editing ? `${ico('check')}Listo, bordes ajustados` : `${ico('pen')}Ajustar bordes`; eb.classList.toggle('btn-dark', !!S.editing); eb.classList.toggle('btn-line', !S.editing); eb.title = 'Ajustar los bordes de ' + zz?.name.toLowerCase(); }
     const svg = $('#polySvg'); if (!svg) return;
     const z = zoneById(S.zsel), pts = S.poly;
     let html = '';
